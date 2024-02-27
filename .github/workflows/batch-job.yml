@@ -94,11 +94,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.searchASF.outputs.MATRIX) }}
+    name: ${{ matrix.name }}
     uses: ./.github/workflows/single-job.yml
     with:
       reference: ${{ matrix.reference }}
       secondary: ${{ matrix.secondary }} 
       looks: ${{ inputs.looks }}
       apply_water_mask: ${{ inputs.apply_water_mask }}
-      workflow_name: ${{ matrix.name }}
     secrets: inherit

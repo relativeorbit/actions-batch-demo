@@ -15,7 +15,9 @@ gh -R relativeorbit/actions-batch-demo workflow run single-job.yml \
   -f secondary=S1_136231_IW2_20200616T022313_VV_5D11-BURST
 ```
 
-Note: the first time this worflow is run the conda environment is created (~3min) and then cached. Subsequent runs are faster because the environment does not need to be re-created.
+NOTE: the first time this worflow is run the conda environment is created (~3min) and then cached. Subsequent runs are faster because the environment does not need to be re-created.
+
+NOTE: `-R relativeorbit/actions-batch-demo` is only required if you are not running the command from a local repository folder
 
 It can be convenient to use custom names if you're running many workflows
 
@@ -48,7 +50,7 @@ Our example workflow generates many files in a custom-named output folder `20200
 gh -R relativeorbit/actions-batch-demo run download 8070991212
 ```
 
-Note: artifact downloads use temporary signed urls that require GitHub authentication (https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#download-an-artifact). The above command performs authentication, follows, redirects, downloads and unzips for you.
+NOTE: artifact downloads use temporary signed urls that require GitHub authentication (https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#download-an-artifact). The above command performs authentication, follows, redirects, downloads and unzips for you.
 
 
 ## Batch computing with a re-useable workflow
@@ -62,7 +64,7 @@ gh -R relativeorbit/actions-batch-demo workflow run batch-job.yml \
   -f burstId=S1_136231_IW2
 ```
 
-Note: An alternative approach would be to write your own script to loop over a range of inputs and fire off jobs by calling the original workflow (psuedocode below). However, it's can be advantages to keep many related jobs under the same 'workflow' and to be able to launch large processing queues from the GitHub.com interface!
+NOTE: An alternative approach would be to write your own script to loop over a range of inputs and fire off jobs by calling the original workflow (psuedocode below). However, it's can be advantages to keep many related jobs under the same 'workflow' and to be able to launch large processing queues from the GitHub.com interface!
 
 ```python
 import os
@@ -73,11 +75,40 @@ for ref, sec in pairsList:
   -f secondary={sec}''')
 ```
 
+### Monitor batch processing
+
+```bash
+gh run list --workflow=batch-job.yml
+```
+
+```
+STATUS  TITLE           WORKFLOW  BRANCH  EVENT              ID          ELAPSED  AGE                 
+*       064_136231_IW2  Batch     main    workflow_dispatch  8072431427  8m1s     about 8 minutes ago
+```
+
+```bash
+gh run view 8072431427
+# Or specific job of a workflow
+gh run view --job=22054171572
+```
+
+### Download artifacts from Batch workflow 
+
+```bash
+cd tmp
+gh -R relativeorbit/actions-batch-demo run download 8072431427 
+```
+
+NOTE: you can do this even if not all jobs have completed! It can take a while to download all artifacts for workflow runs, you can use filters to download only certain artifacts.
+
+
+
+
 ## Configuration
 
 * The workflow requires the following Actions secrets. Links below to set up free accounts with these data providers.
-  * EARTHDATA_USERNAME & EARTHDATA_PASSWORD (to download S1 Images from ASF DAAC https://urs.earthdata.nasa.gov)
-  * ESA_USERNAME & ESA_PASSWORD (to download Sentinel-1 precise orbits from https://dataspace.copernicus.eu)
+  * `EARTHDATA_USERNAME` & `EARTHDATA_PASSWORD` (to download S1 Images from ASF DAAC https://urs.earthdata.nasa.gov)
+  * `ESA_USERNAME` & `ESA_PASSWORD` (to download Sentinel-1 precise orbits from https://dataspace.copernicus.eu)
 
 
 ## Ackowledgments

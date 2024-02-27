@@ -114,4 +114,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: ${{ needs.parse_inputs.outputs.shortname}}
-                path: S1_*INT*
+                # Exclude redundant zipped output folder from hyp3-isce2
+                path: |
+                    S1_*INT*
+                    !S1_*ZIP
