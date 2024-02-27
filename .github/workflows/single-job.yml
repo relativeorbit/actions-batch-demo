@@ -23,7 +23,7 @@ on:
             default: 20x4
             options: ['20x4', '10x2', '5x1']
         apply_water_mask:
-            description: 'True to apply a water mask'
+            description: 'Apply a water mask'
             required: true
             default: false
             type: boolean
