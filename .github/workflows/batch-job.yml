@@ -63,7 +63,7 @@ jobs:
           import os
 
           results = asf.search(platform=[asf.PLATFORM.SENTINEL1], 
-                               processingLevel=asf.BURST, 
+                               processingLevel=asf.PRODUCT_TYPE.BURST, 
                                polarization="${{ inputs.polarization }}",
                                fullBurstID="${{ inputs.burstId }}")
           print('Number of Acquisitions: ', len(results))
