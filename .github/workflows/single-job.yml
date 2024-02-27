@@ -1,6 +1,8 @@
 # Install HYp3-ISCE2 from specific tag
 name: Process Single Pair
+run-name: ${{ inputs.workflow_name }}
 
+# Set workflow input parameters and defaults
 on:
   workflow_dispatch:
     inputs:
@@ -25,10 +27,32 @@ on:
             required: true
             default: false
             type: boolean
+        workflow_name:
+            description: 'Custom workflow name'
+            required: false
+            default: 'Hyp3-ISCE2'
+            type: string
 
 jobs:
+    # Parse inputs in some way, here we create an abbreviated jobname from input parameter strings
+    parse_inputs:
+        outputs:
+            shortname: ${{ steps.parser.outputs.test }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get Shorthand Dates for Output Subfolder Name
+              id: parser
+              env:
+                REF: ${{ inputs.reference }}
+                SEC: ${{ inputs.secondary }}
+              run: |
+                    SHORTNAME=${REF:14:8}_${SEC:14:8}
+                    echo "SHORTNAME=${SHORTNAME}" >> $GITHUB_OUTPUT
+    
+    # Run your Python code!
     hyp3-isce2:
-        name: "${{ inputs.reference }}_${{ inputs.secondary }}"
+        needs: parse_inputs
+        name: ${{ needs.parse_inputs.outputs.shortname}}
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -44,6 +68,7 @@ jobs:
                 cache-environment: true
                 environment-file: environment.yml
 
+            # NOTE: be sure to share Organization Secrets with this repository
             - name: Run Hyp3-ISCE2 Software
               env: 
                 EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
@@ -52,21 +77,13 @@ jobs:
                 ESA_PASSWORD: ${{ secrets.ESA_PASSWORD}}
               run: |
                 python -m hyp3_isce2 ++process insar_tops_burst \
-                ${{ inputs.reference }}\
-                ${{ inputs.secondary }} \
-                --looks ${{ inputs.looks }} \
-                --apply-water-mask ${{ inputs.apply_water_mask }} 
-
-            - name: Get Shorthand Dates for Output Subfolder Name
-              env:
-                REF: ${{ inputs.reference }}
-                SEC: ${{ inputs.secondary }}
-              run: |
-                PREFIX=${REF:14:8}_${SEC:14:8}
-                echo "PREFIX=${PREFIX}" >> $GITHUB_ENV
+                    ${{ inputs.reference }} \
+                    ${{ inputs.secondary }} \
+                    --looks ${{ inputs.looks }} \
+                    --apply-water-mask ${{ inputs.apply_water_mask }} 
 
             - name: Upload Hyp3-ISCE2 Output Folder
               uses: actions/upload-artifact@v4
               with:
-                name: ${{ env.PREFIX }}
+                name: ${{ needs.parse_inputs.outputs.shortname}}
                 path: S1_*INT*
