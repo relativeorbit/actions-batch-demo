@@ -1,5 +1,19 @@
-name: hyp3-stac
+name: hyp3-isce2
 channels:
   - conda-forge
+  - nodefaults
 dependencies:
-  - hyp3-isce2=1
+  - python>=3.9
+  - numpy
+  - pip
+  - isce2>=2.6.3
+  - dem_stitcher>=2.4.0
+  - rasterio
+  - shapely
+  - jinja2
+  - asf_search>=6.4.0
+  - gdal
+  # For running
+  - hyp3lib>=3,<4
+  - pip:
+    - git+https://github.com/ASFHyP3/hyp3-isce2.git@v1.0.0
