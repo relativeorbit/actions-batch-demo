@@ -40,6 +40,14 @@ jobs:
             shortname: ${{ steps.parser.outputs.SHORTNAME }}
         runs-on: ubuntu-latest
         steps:
+            - name: Echo Inputs
+              run: |
+                    echo ${{ inputs.reference }}
+                    echo ${{ inputs.secondary }}
+                    echo ${{ inputs.looks }}
+                    echo ${{ inputs.apply_water_mask }}
+                    echo ${{ inputs.workflow_name }}
+
             - name: Get Shorthand Dates for Output Subfolder Name
               id: parser
               env:
