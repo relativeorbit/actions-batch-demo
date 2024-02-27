@@ -37,7 +37,7 @@ jobs:
     # Parse inputs in some way, here we create an abbreviated jobname from input parameter strings
     parse_inputs:
         outputs:
-            shortname: ${{ steps.parser.outputs.test }}
+            shortname: ${{ steps.parser.outputs.SHORTNAME }}
         runs-on: ubuntu-latest
         steps:
             - name: Get Shorthand Dates for Output Subfolder Name
@@ -47,6 +47,7 @@ jobs:
                 SEC: ${{ inputs.secondary }}
               run: |
                     SHORTNAME=${REF:14:8}_${SEC:14:8}
+                    echo $SHORTNAME
                     echo "SHORTNAME=${SHORTNAME}" >> $GITHUB_OUTPUT
     
     # Run your Python code!
