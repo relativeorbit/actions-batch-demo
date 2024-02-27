@@ -33,6 +33,25 @@ on:
             default: 'Hyp3-ISCE2'
             type: string
 
+  # Must duplicate inputs for workflow_call (https://github.com/orgs/community/discussions/39357)
+  workflow_call:
+    inputs:
+        reference:
+            type: string
+            description: Reference SLC
+        secondary:
+            type: string
+            description: Secondary SLC
+        looks:
+            type: string
+            description: Range x Azimuth Looks
+        apply_water_mask:
+            description: 'Apply a water mask'
+            type: boolean
+        workflow_name:
+            description: 'Custom workflow name'
+            type: string
+
 jobs:
     # Parse inputs in some way, here we create an abbreviated jobname from input parameter strings
     parse_inputs:
@@ -42,11 +61,11 @@ jobs:
         steps:
             - name: Echo Inputs
               run: |
-                    echo ${{ inputs.reference }}
-                    echo ${{ inputs.secondary }}
-                    echo ${{ inputs.looks }}
-                    echo ${{ inputs.apply_water_mask }}
-                    echo ${{ inputs.workflow_name }}
+                    echo "reference= ${{ inputs.reference }}"
+                    echo "secondary= ${{ inputs.secondary }}"
+                    echo "looks= ${{ inputs.looks }}"
+                    echo "apply_water_mask= ${{ inputs.apply_water_mask }}"
+                    echo "workflow_name= ${{ inputs.workflow_name }}"
 
             - name: Get Shorthand Dates for Output Subfolder Name
               id: parser
