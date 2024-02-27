@@ -1,0 +1,5 @@
+name: hyp3-stac
+channels:
+  - conda-forge
+dependencies:
+  - hyp3-isce2=1
