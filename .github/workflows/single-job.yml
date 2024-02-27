@@ -1,5 +1,5 @@
-# Install HYp3-ISCE2 from specific tag
-name: Process Single Pair
+# Process a single image pair
+name: Single
 run-name: ${{ inputs.workflow_name }}
 
 # Set workflow input parameters and defaults

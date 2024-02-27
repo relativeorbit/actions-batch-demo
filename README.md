@@ -1,7 +1,9 @@
 # actions-batch-demo
 Demo repository for batch processing with Github Actions
 
-Install the [GitHub actions CLI](https://cli.github.com) in order to easily run workflows from the command line. Alternatively you can manually run workflows from the 'Actions' repository tab. NOTE: you must be a member of this GitHub organization to run these workflows, or you can fork this repository and add your own secrets (see below).
+NOTE: you must be a member of this GitHub organization to successfully run the commands below, or you can fork this repository and add your own secrets.
+
+Install the [GitHub actions CLI](https://cli.github.com) in order to easily run workflows from the command line. Alternatively you can manually run workflows from the 'Actions' repository tab. 
 
 This example workflow processes 2 public satellite images with open source software. The software uses multiprocessing to take advange of multiple CPU-cores, takes about 5 minutes to run, and generates about 30MB of output images.
 
@@ -10,7 +12,7 @@ This example workflow processes 2 public satellite images with open source softw
 ```bash
 gh -R relativeorbit/actions-batch-demo workflow run single-job.yml \
   -f reference=S1_136231_IW2_20200604T022312_VV_7C85-BURST \
-  -f secondary=S1_136231_IW2_20200616T022313_VV_5D11-BURST \
+  -f secondary=S1_136231_IW2_20200616T022313_VV_5D11-BURST
 ```
 
 Note: the first time this worflow is run the conda environment is created (~3min) and then cached. Subsequent runs are faster because the environment does not need to be re-created.
@@ -48,6 +50,7 @@ gh -R relativeorbit/actions-batch-demo run download 8070991212
 
 Note: artifact downloads use temporary signed urls that require GitHub authentication (https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#download-an-artifact). The above command performs authentication, follows, redirects, downloads and unzips for you.
 
+
 ## Batch computing with a re-useable workflow
 
 Above we described a single workflow, which is similar to a 'serverless function'. It can be called with different inputs, is run on GitHub/Microsoft Azure VMs, and outputs temporarily stored in Blob storage. Next we take advantage of GitHub's 'resuable' actions to map many jobs (must be less than 256) to process a list of inputs in parallel.
@@ -58,3 +61,24 @@ The example used 2 satellite images, in fact there is a stack of these images an
 gh -R relativeorbit/actions-batch-demo workflow run batch-job.yml \
   -f burstId=S1_136231_IW2
 ```
+
+Note: An alternative approach would be to write your own script to loop over a range of inputs and fire off jobs by calling the original workflow (psuedocode below). However, it's can be advantages to keep many related jobs under the same 'workflow' and to be able to launch large processing queues from the GitHub.com interface!
+
+```python
+import os
+pairsList = [(image1,image2), (image3,image4)]
+for ref, sec in pairsList:
+  os.system(f'''gh -R relativeorbit/actions-batch-demo workflow run single-job.yml \
+  -f reference={ref} \
+  -f secondary={sec}''')
+```
+
+## Configuration
+
+* The workflow requires the following Actions secrets. Links below to set up free accounts with these data providers.
+  * EARTHDATA_USERNAME & EARTHDATA_PASSWORD (to download S1 Images from ASF DAAC https://urs.earthdata.nasa.gov)
+  * ESA_USERNAME & ESA_PASSWORD (to download Sentinel-1 precise orbits from https://dataspace.copernicus.eu)
+
+
+## Ackowledgments
+[University of Washington eScience Winter Incubator 2024](https://escience.washington.edu/incubator-24-glacial-lakes/)

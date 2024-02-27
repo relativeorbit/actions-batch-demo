@@ -1,4 +1,5 @@
-name: Process Many Pairs
+# Batch process many image pairs
+name: Batch
 run-name: ${{ inputs.burstId }} 
 
 on:
@@ -21,6 +22,16 @@ on:
         description: Range x Azimuth Looks
         default: '20x4'
         options: ['20x4','10x2','5x1']
+      apply_water_mask:
+        description: 'Apply a water mask'
+        required: true
+        default: false
+        type: boolean
+      workflow_name:
+        description: 'Custom workflow name'
+        required: false
+        default: 'Hyp3-ISCE2-Batch'
+        type: string
 
 jobs:
   # The output of this job is a JSON mapping for a matrix job
@@ -87,7 +98,7 @@ jobs:
     with:
       reference: ${{ matrix.reference }}
       secondary: ${{ matrix.secondary }} 
-      polarization: ${{ inputs.polarization }}
       looks: ${{ inputs.looks }}
+      apply_water_mask: ${{ inputs.apply_water_mask }}
       workflow_name: ${{ matrix.name }}
     secrets: inherit
