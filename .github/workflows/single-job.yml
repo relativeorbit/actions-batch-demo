@@ -68,7 +68,8 @@ jobs:
               uses: mamba-org/setup-micromamba@v1
               with:
                 cache-environment: true
-                environment-file: environment.yml
+                environment-file: conda-lock.yml
+                environment-name: hyp3-isce2
 
             # NOTE: be sure to share Organization Secrets with this repository
             - name: Run Hyp3-ISCE2 Software
