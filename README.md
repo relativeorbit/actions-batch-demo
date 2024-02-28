@@ -22,7 +22,9 @@ NOTE: `-R relativeorbit/actions-batch-demo` is only required if you are not runn
 It can be convenient to use custom names if you're running many workflows
 
 ```bash
-gh -R relativeorbit/actions-batch-demo workflow run single-job.yml \
+cd actions-batch-demo
+
+gh workflow run single-job.yml \
   -f reference=S1_136231_IW2_20200604T022312_VV_7C85-BURST \
   -f secondary=S1_136231_IW2_20200616T022313_VV_5D11-BURST \
   -f apply_water_mask=true \
@@ -33,13 +35,13 @@ gh -R relativeorbit/actions-batch-demo workflow run single-job.yml \
 
 You can go to the GitHub Repository's Actions tab (https://github.com/relativeorbit/actions-batch-demo/actions) or monitor from the command line:
 ```bash
-gh -R relativeorbit/actions-batch-demo run list --workflow=single-job.yml
+gh run list --workflow=single-job.yml
 ```
 
 You can easily view logs referring to unique workflow IDs reported by the command above
 
 ```bash
-gh -R relativeorbit/actions-batch-demo run view 8070732913 --log 
+gh run view 8070732913 --log 
 ```
 
 ### Download workflow outputs
@@ -47,6 +49,7 @@ gh -R relativeorbit/actions-batch-demo run view 8070732913 --log
 Our example workflow generates many files in a custom-named output folder `20200604_20200616` which is zipped and stored as a GitHub Actions "Artifact". We can retrieve and unzip this output for a given workflow ID: 
 
 ```bash
+cd /tmp
 gh -R relativeorbit/actions-batch-demo run download 8070991212
 ```
 
@@ -60,8 +63,7 @@ Above we described a single workflow, which is similar to a 'serverless function
 The example used 2 satellite images, in fact there is a stack of these images and we can process pair-wise combinations. This job performs a search for compatible images (using a public API and image stack identifier), then maps image pairs as jobs executed by our existing workflow.
 
 ```bash
-gh -R relativeorbit/actions-batch-demo workflow run batch-job.yml \
-  -f burstId=S1_136231_IW2
+gh workflow run batch-job.yml -f burstId=064_136231_IW2
 ```
 
 NOTE: An alternative approach would be to write your own script to loop over a range of inputs and fire off jobs by calling the original workflow (psuedocode below). However, it's can be advantages to keep many related jobs under the same 'workflow' and to be able to launch large processing queues from the GitHub.com interface!
@@ -102,7 +104,21 @@ gh -R relativeorbit/actions-batch-demo run download 8072431427
 NOTE: you can do this even if not all jobs have completed! It can take a while to download all artifacts for workflow runs, you can use filters to download only certain artifacts.
 
 
+### Scaling up
 
+So far we've run a workflow that processes 15 image pairs in parallel. Since each job uses 4vCPU and 16GB, we effectively have used a compute cluster size of 60vCPU, which is more than a typical laptop. Also we didn't have our laptop fan going full blast and this completed in less than 9 minutes! Still, larger workflows are common place. Next we try a set of 157 images:
+
+```bash
+gh workflow run batch-job.yml -f burstId=115_245676_IW2
+```
+
+Note: most accounts have access to 20 concurrent runners. Here we have 156 jobs, so this workflow will take a bit longer as jobs get queued (156/20)*9min ~ 70min. If you have an academic or 'pro' account you have 
+
+
+```
+gh run download 8073568114 --dir /tmp --name "20200420_20200502"
+gh run download 8073568114 --dir /tmp --pattern "*20200220*"
+```
 
 ## Configuration
 
