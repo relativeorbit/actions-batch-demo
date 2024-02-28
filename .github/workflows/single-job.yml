@@ -91,5 +91,6 @@ jobs:
                 name: ${{ inputs.workflow_name }}
                 # Exclude redundant zipped output folder from hyp3-isce2
                 path: |
+                    !S1_*.zip
                     S1_*INT*
-                    !S1_*ZIP
+                    
