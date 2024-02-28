@@ -53,34 +53,8 @@ on:
             type: string
 
 jobs:
-    # Parse inputs in some way, here we create an abbreviated jobname from input parameter strings
-    parse_inputs:
-        outputs:
-            shortname: ${{ steps.parser.outputs.SHORTNAME }}
-        runs-on: ubuntu-latest
-        steps:
-            - name: Echo Inputs
-              run: |
-                    echo "reference= ${{ inputs.reference }}"
-                    echo "secondary= ${{ inputs.secondary }}"
-                    echo "looks= ${{ inputs.looks }}"
-                    echo "apply_water_mask= ${{ inputs.apply_water_mask }}"
-                    echo "workflow_name= ${{ inputs.workflow_name }}"
-
-            - name: Get Shorthand Dates for Output Subfolder Name
-              id: parser
-              env:
-                REF: ${{ inputs.reference }}
-                SEC: ${{ inputs.secondary }}
-              run: |
-                    SHORTNAME=${REF:14:8}_${SEC:14:8}
-                    echo $SHORTNAME
-                    echo "SHORTNAME=${SHORTNAME}" >> $GITHUB_OUTPUT
-    
-    # Run your Python code!
     hyp3-isce2:
-        needs: parse_inputs
-        name: ${{ needs.parse_inputs.outputs.shortname}}
+        name: ${{ inputs.workflow_name }}
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -113,7 +87,7 @@ jobs:
             - name: Upload Hyp3-ISCE2 Output Folder
               uses: actions/upload-artifact@v4
               with:
-                name: ${{ needs.parse_inputs.outputs.shortname}}
+                name: ${{ inputs.workflow_name }}
                 # Exclude redundant zipped output folder from hyp3-isce2
                 path: |
                     S1_*INT*

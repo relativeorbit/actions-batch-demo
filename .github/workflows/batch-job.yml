@@ -101,4 +101,5 @@ jobs:
       secondary: ${{ matrix.secondary }} 
       looks: ${{ inputs.looks }}
       apply_water_mask: ${{ inputs.apply_water_mask }}
+      workflow_name: ${{ matrix.name }}
     secrets: inherit
