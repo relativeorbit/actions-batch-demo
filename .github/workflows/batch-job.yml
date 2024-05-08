@@ -33,6 +33,26 @@ on:
         default: 'Hyp3-ISCE2-Batch'
         type: string
 
+  # Must duplicate inputs for workflow_call (https://github.com/orgs/community/discussions/39357)
+  workflow_call:
+    inputs:
+      burstId:
+        type: string
+        required: true
+      polarization:
+        type: string
+        required: true
+      looks:
+        type: string
+        required: true
+      apply_water_mask:
+        type: boolean
+        required: true
+      workflow_name:
+        type: string
+        required: false
+
+
 jobs:
   # The output of this job is a JSON mapping for a matrix job
   searchASF:
